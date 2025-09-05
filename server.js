@@ -16,17 +16,29 @@ if (process.env.NODE_ENV === "production" && !process.env.SESSION_SECRET) {
 // ==== ミドルウェア ===================================================
 app.use(express.json());
 
+const session = require("express-session");
+const SQLiteStore = require("connect-sqlite3")(session);
+
+// Render 等のLB配下では secure Cookie 判定のため必須
+app.set("trust proxy", 1);
+
 app.use(
   session({
     name: "sid",
     secret: process.env.SESSION_SECRET || "dev-session-secret",
+    store: new SQLiteStore({
+      // 永続ディスク配下に保存（Render の推奨パス）
+      dir: process.env.SESSIONS_DIR || "/opt/render/project/data",
+      db: "sessions.sqlite", // ファイル名
+      // table: 'sessions',   // 変えたい場合だけ
+    }),
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
       sameSite: "lax",
-      secure: process.env.NODE_ENV === "production", // HTTPS本番
-      maxAge: 1000 * 60 * 60 * 8, // 8h
+      secure: process.env.NODE_ENV === "production", // 本番は Secure
+      maxAge: 1000 * 60 * 60 * 8, // 8時間
     },
   })
 );
