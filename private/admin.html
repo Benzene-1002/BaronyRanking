@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BaronyRanking</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+    />
+  </head>
+
+  <body>
+    <header>
+      <h1>Barony 秋メン ランキング</h1>
+      <div class="header-buttons">
+        <a href="#" class="header-button"><i class="fa fa-gear"></i></a>
+        <a href="#" class="header-profile">My Profile</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="sidebar">
+        <a href="index.html" class="sidebar-button"
+          ><i class="fa fa-home"></i>ホーム</a
+        >
+        <a href="match-log.html" class="sidebar-button">試合結果一覧</a>
+        <a href="ranking-log.html" class="sidebar-button">過去のランキング</a>
+        <a href="/admin" class="sidebar-button-pointed">管理者ページ</a>
+      </div>
+
+      <div class="container">
+        <!-- private/admin.html の「1) シーズン初期化」セクションの直下などに追加 -->
+        <section>
+          <h2>シーズン初期化</h2>
+          <div class="row">
+            <div>
+              <label>年 (例: 2025)</label>
+              <input id="year2" type="number" value="2025" />
+            </div>
+            <div>
+              <label>rank,name を1行ずつ（例: 1,山田 / 1,田中 / 2,佐藤）</label>
+              <textarea id="entries" rows="6">
+1,A
+1,B
+2,C
+2,D
+3,E</textarea
+              >
+            </div>
+          </div>
+          <div style="align-self: end">
+            <button id="btnInitEntries">この形式でシーズン作成</button>
+          </div>
+          <div id="initMsg2"></div>
+        </section>
+
+        <section>
+          <h2>選手追加</h2>
+          <div class="row">
+            <div>
+              <label>season_id</label>
+              <input id="seasonId" type="number" value="1" />
+            </div>
+            <div>
+              <label>選手名</label>
+              <input id="newPlayerName" placeholder="例: 川副太郎" />
+            </div>
+          </div>
+
+          <div class="row">
+            <div>
+              <label>挿入位置</label>
+              <select id="insertMode">
+                <option value="bottom">末尾に追加</option>
+                <option value="top">先頭に追加</option>
+                <option value="rank">指定の順位に挿入</option>
+              </select>
+            </div>
+            <div>
+              <label>指定順位（1始まり）</label>
+              <input
+                id="insertRank"
+                type="number"
+                min="1"
+                placeholder="例: 3"
+                disabled
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <!-- private/admin.html の <main> か header に追加 -->
+            <button
+              id="btnLogout"
+              class="header-button"
+              style="margin-left: 8px"
+            >
+              ログアウト
+            </button>
+
+            <div style="align-self: end">
+              <button id="btnAddPlayer">選手を追加</button>
+            </div>
+          </div>
+
+          <div id="addPlayerMsg"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

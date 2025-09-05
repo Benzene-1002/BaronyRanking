@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BaronyRanking</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+    />
+  </head>
+
+  <body>
+    <header>
+      <h1>Barony 秋メン ランキング</h1>
+      <div class="header-buttons">
+        <a href="#" class="header-button"><i class="fa fa-gear"></i></a>
+        <a href="#" class="header-profile">My Profile</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="sidebar">
+        <a href="index.html" class="sidebar-button-pointed"
+          ><i class="fa fa-home"></i>ホーム</a
+        >
+        <a href="match-log.html" class="sidebar-button">試合結果一覧</a>
+        <a href="ranking-log.html" class="sidebar-button">過去のランキング</a>
+        <a href="/admin" class="sidebar-button">管理者ページ</a>
+      </div>
+
+      <div class="container">
+        <section>
+          <h2>ランキング表示</h2>
+          <div class="row">
+            <div>
+              <label>年度</label>
+              <select id="seasonYear"></select>
+            </div>
+            <div style="align-self: end">
+              <button id="btnFetch">ランキングを取得</button>
+            </div>
+          </div>
+          <div id="rankArea"></div>
+        </section>
+
+        <section>
+          <h2>試合登録</h2>
+          <div class="row">
+            <div>
+              <label>勝者名</label>
+              <input id="winner" placeholder="例: C" />
+            </div>
+            <div>
+              <label>敗者名</label>
+              <input id="loser" placeholder="例: B" />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label>試合日時</label>
+              <input id="playedAt" placeholder="未入力で現在時刻" />
+            </div>
+            <div>
+              <label>スコア（任意）</label>
+              <input id="score" placeholder="例: 6-4, 3-6, 10-7" />
+            </div>
+            <div>
+              <label>備考（任意）</label>
+              <input
+                id="note"
+                placeholder="例: フレンドマッチ／欠場連絡あり など"
+              />
+            </div>
+            <div style="align-self: end">
+              <button id="btnMatch">試合を登録</button>
+            </div>
+          </div>
+          <div id="matchMsg"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

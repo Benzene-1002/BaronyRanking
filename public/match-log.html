@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>BaronyRanking</title>
+    <link rel="stylesheet" href="/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+    />
+  </head>
+
+  <body>
+    <header>
+      <h1>Barony 秋メン ランキング</h1>
+      <div class="header-buttons">
+        <a href="#" class="header-button"><i class="fa fa-gear"></i></a>
+        <a href="#" class="header-profile">My Profile</a>
+      </div>
+    </header>
+
+    <main>
+      <div class="sidebar">
+        <a href="index.html" class="sidebar-button"
+          ><i class="fa fa-home"></i>ホーム</a
+        >
+        <a href="match-log.html" class="sidebar-button-pointed">試合結果一覧</a>
+        <a href="ranking-log.html" class="sidebar-button">過去のランキング</a>
+        <a href="/admin" class="sidebar-button">管理者ページ</a>
+      </div>
+
+      <div class="container">
+        <section>
+          <h2>試合結果一覧</h2>
+          <div class="row">
+            <div>
+              <label>年度</label>
+              <select id="seasonYear"></select>
+            </div>
+            <div style="align-self: end">
+              <button id="btnLoadMatches">一覧を取得</button>
+            </div>
+          </div>
+          <div id="matchList"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="/app.js" defer></script>
+  </body>
+</html>

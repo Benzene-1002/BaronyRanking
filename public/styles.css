@@ -1,0 +1,174 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: sans-serif;
+  display: flex;
+  min-height: 100vh; /* 画面の高さいっぱいまで広げる */
+  flex-direction: column;
+}
+
+main {
+  display: flex;
+  flex-grow: 1; /* 残りのスペースを全て占有する */
+}
+
+.container {
+  flex-grow: 1;
+  background-color: lightgray;
+  padding: 20px;
+}
+
+header {
+  height: 80px;
+  background-color: gray;
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 要素を左右に配置 */
+  padding: 0 20px;
+}
+
+.header-buttons {
+  /* 左側の余白を自動で最大化し、要素を右端に寄せる */
+  margin-left: auto;
+  display: flex;
+  gap: 0px;
+}
+
+.header-button {
+  display: flex; /* ← flex化 */
+  align-items: center; /* ← 垂直中央 */
+  justify-content: center; /* ← 水平中央 */
+  text-align: center;
+  width: 80px;
+  height: 80px;
+  background-color: gray;
+  color: white;
+  font-size: 16px;
+  text-decoration: none; /* 下線を消す */
+  border: none;
+  cursor: pointer;
+}
+
+.header-button:hover {
+  background-color: darkgray;
+}
+
+.header-profile {
+  display: flex; /* ← flex化 */
+  align-items: center; /* ← 垂直中央 */
+  justify-content: center; /* ← 水平中央 */
+  text-align: center;
+  width: 200px;
+  height: 80px;
+  background-color: gray;
+  color: white;
+  font-size: 16px;
+  text-decoration: none; /* 下線を消す */
+  border: none;
+  cursor: pointer;
+}
+
+.header-profile:hover {
+  background-color: darkgray;
+}
+
+.sidebar {
+  width: 240px;
+  background-color: grey;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.sidebar-button {
+  border: none;
+  text-align: center;
+  width: 240px;
+  background-color: gray;
+  color: white;
+  font-size: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  text-decoration: none;
+}
+
+.sidebar-button:hover {
+  background-color: darkgray;
+}
+
+.sidebar-button-pointed {
+  border: none;
+  text-align: center;
+  width: 240px;
+  background-color: darkgray;
+  color: white;
+  font-size: 20px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  text-decoration: none;
+}
+
+section {
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+label {
+  display: block;
+  margin: 8px 0 4px;
+  font-weight: 600;
+}
+
+input,
+textarea,
+button,
+select {
+  padding: 8px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+button {
+  width: auto;
+  cursor: pointer;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.ok {
+  color: #0a7;
+  font-weight: 700;
+}
+
+.err {
+  color: #c00;
+  font-weight: 700;
+  white-space: pre-wrap;
+}
+
+small {
+  color: #666;
+}
