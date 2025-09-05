@@ -3,6 +3,7 @@
 const express = require("express");
 const path = require("path");
 const session = require("express-session");
+const SQLiteStore = require("connect-sqlite3")(session);
 const bcrypt = require("bcryptjs");
 const db = require("./db");
 
@@ -15,9 +16,6 @@ if (process.env.NODE_ENV === "production" && !process.env.SESSION_SECRET) {
 
 // ==== ミドルウェア ===================================================
 app.use(express.json());
-
-const session = require("express-session");
-const SQLiteStore = require("connect-sqlite3")(session);
 
 // Render 等のLB配下では secure Cookie 判定のため必須
 app.set("trust proxy", 1);
