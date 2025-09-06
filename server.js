@@ -253,6 +253,10 @@ app.get("/rankings", (req, res) => {
 // POST /matches { season_id, winner_name, loser_name, played_at? }
 // 既存 /matches をこの実装に置き換え
 // 置き換え：同順位＝敗者のみ+1、下剋上＝勝者を(敗者rank-1)へ、詰め直しナシ
+// ランキング更新ルール：
+// - 上位が勝つ（wRank < lRank）→ 変動なし
+// - 下剋上（wRank > lRank）   → 勝者 rank = max(1, 敗者rank-1)（他は触らない）
+// - 同順位（wRank === lRank） → 勝者は同ランク帯の先頭（rank据え置き）／その他(敗者含む)は +1 で繰り下げ
 app.post("/matches", (req, res) => {
   const { season_id, winner_name, loser_name, played_at, score, note } =
     req.body || {};
@@ -260,10 +264,12 @@ app.post("/matches", (req, res) => {
   const wn = String(winner_name || "").trim();
   const ln = String(loser_name || "").trim();
   if (!seasonId || !wn || !ln) {
-    return res.status(400).json({
-      ok: false,
-      error: "season_id, winner_name, loser_name required",
-    });
+    return res
+      .status(400)
+      .json({
+        ok: false,
+        error: "season_id, winner_name, loser_name required",
+      });
   }
 
   try {
@@ -279,7 +285,10 @@ app.post("/matches", (req, res) => {
 
       // 試合ログ
       db.prepare(
-        `INSERT INTO matches(season_id, played_at, winner_id, loser_id, score, note, processed) VALUES (?, ?, ?, ?, ?, ?, 1)`
+        `
+        INSERT INTO matches(season_id, played_at, winner_id, loser_id, score, note, processed)
+        VALUES (?, ?, ?, ?, ?, ?, 1)
+      `
       ).run(
         seasonId,
         played_at || new Date().toISOString(),
@@ -289,7 +298,7 @@ app.post("/matches", (req, res) => {
         note || null
       );
 
-      // ラダーに存在しなければ末尾に追加（MAX(rank)+1）
+      // ラダーに未登録なら末尾へ（MAX(rank)+1）
       const ensure = (pid) => {
         const ex = db
           .prepare(
@@ -299,7 +308,7 @@ app.post("/matches", (req, res) => {
         if (!ex) {
           const mx = db
             .prepare(
-              `SELECT COALESCE(MAX(rank),0) as mx FROM season_rankings WHERE season_id = ?`
+              `SELECT COALESCE(MAX(rank),0) AS mx FROM season_rankings WHERE season_id = ?`
             )
             .get(seasonId).mx;
           db.prepare(
@@ -310,7 +319,7 @@ app.post("/matches", (req, res) => {
       ensure(winner_id);
       ensure(loser_id);
 
-      // 現在ランク
+      // 現在のランクを取得
       const rows = db
         .prepare(
           `
@@ -320,6 +329,7 @@ app.post("/matches", (req, res) => {
       `
         )
         .all(seasonId, winner_id, loser_id);
+
       const wRank = rows.find((r) => r.player_id === winner_id).rank;
       const lRank = rows.find((r) => r.player_id === loser_id).rank;
 
@@ -327,17 +337,25 @@ app.post("/matches", (req, res) => {
         // 上位が勝利 → 変動なし
         return;
       } else if (wRank > lRank) {
-        // 下剋上 → 勝者を敗者の1つ上（= 敗者rank-1、最低1）
+        // 下剋上 → 勝者を敗者の1つ上へ（他は触らない）
         const newWRank = Math.max(1, lRank - 1);
         db.prepare(
           `UPDATE season_rankings SET rank = ? WHERE season_id = ? AND player_id = ?`
         ).run(newWRank, seasonId, winner_id);
       } else {
-        // 同順位 → 勝者据え置き、敗者のみ+1降格
-        const newLRank = lRank + 1;
+        // === 同順位どうし ===
+        // 勝者は rank 据え置き（＝そのランク帯の先頭）
+        // 同ランク帯の "勝者以外全員" を +1 で繰り下げ（敗者含む）
         db.prepare(
-          `UPDATE season_rankings SET rank = ? WHERE season_id = ? AND player_id = ?`
-        ).run(newLRank, seasonId, loser_id);
+          `
+          UPDATE season_rankings
+             SET rank = rank + 1
+           WHERE season_id = ?
+             AND rank = ?
+             AND player_id != ?
+        `
+        ).run(seasonId, wRank, winner_id);
+        // 勝者は触らない（そのまま rank=wRank に残る）
       }
     })();
 
