@@ -25,7 +25,7 @@ function renderTable(rows) {
         }</td></tr>`
     )
     .join("");
-  return `<table>${th}${trs}</table>`;
+  return `<div class="table-wrap"><table>${th}${trs}</table></div>`;
 }
 
 // season_id を入力欄 or localStorage から取得（無ければ 1）
@@ -38,6 +38,30 @@ function getSeasonId() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  // ハンバーガーでサイドバー開閉
+  on("menuToggle", "click", () => {
+    const open = !document.body.classList.contains("menu-open");
+    document.body.classList.toggle("menu-open", open);
+    const btn = document.getElementById("menuToggle");
+    if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+  });
+
+  // 背景タップで閉じる
+  on("backdrop", "click", () => {
+    document.body.classList.remove("menu-open");
+    const btn = document.getElementById("menuToggle");
+    if (btn) btn.setAttribute("aria-expanded", "false");
+  });
+
+  // サイドバー内のリンクを押したら自動で閉じる
+  document.querySelectorAll(".sidebar a").forEach((a) => {
+    a.addEventListener("click", () => {
+      document.body.classList.remove("menu-open");
+      const btn = document.getElementById("menuToggle");
+      if (btn) btn.setAttribute("aria-expanded", "false");
+    });
+  });
+
   // ▼ 年セレクトを初期化
   async function initSeasonYearSelect() {
     const sel = document.getElementById("seasonYear");
@@ -246,11 +270,14 @@ document.addEventListener("DOMContentLoaded", () => {
           )
           .join("");
 
+        // 試合一覧の描画（btnLoadMatches内）もラップ
         if ($("matchList")) {
-          $("matchList").innerHTML = `<table>
-       <tr><th>日時</th><th>勝者</th><th>敗者</th><th>スコア</th><th>備考</th></tr>
-       ${rows}
-     </table>`;
+          $("matchList").innerHTML = `<div class="table-wrap">
+       <table>
+         <tr><th>日時</th><th>勝者</th><th>敗者</th><th>スコア</th><th>備考</th></tr>
+         ${rows}
+       </table>
+     </div>`;
         }
       } else {
         if ($("matchList"))

@@ -13,15 +13,25 @@
 
   <body>
     <header>
+      <button
+        id="menuToggle"
+        class="hamburger"
+        aria-label="メニュー"
+        aria-controls="sidebar"
+        aria-expanded="false"
+      >
+        <span></span><span></span><span></span>
+      </button>
       <h1>Barony 秋メン ランキング</h1>
       <div class="header-buttons">
         <a href="#" class="header-button"><i class="fa fa-gear"></i></a>
         <a href="#" class="header-profile">My Profile</a>
       </div>
     </header>
+    <div id="backdrop" class="backdrop" aria-hidden="true"></div>
 
     <main>
-      <div class="sidebar">
+      <div id="sidebar" class="sidebar">
         <a href="index.html" class="sidebar-button-pointed"
           ><i class="fa fa-home"></i>ホーム</a
         >

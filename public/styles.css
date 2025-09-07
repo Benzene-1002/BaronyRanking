@@ -172,3 +172,109 @@ td {
 small {
   color: #666;
 }
+
+/* === Responsive additions === */
+
+/* テーブルを横スクロールで崩れにくく */
+.table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.table-wrap table {
+  min-width: 520px; /* 狭い画面でもヘッダが潰れないように */
+}
+
+/* ハンバーガー */
+.hamburger {
+  display: none; /* PCでは非表示、モバイルで出す */
+  background: transparent;
+  border: 0;
+  width: 44px;
+  height: 44px;
+  margin-right: 8px;
+  cursor: pointer;
+}
+.hamburger span {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background: #fff;
+  margin: 6px 0;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+/* オーバーレイ（サイドバー開時に背面を暗く） */
+.backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  z-index: 900;
+}
+
+/* ====== モバイル(<= 768px)用 ====== */
+@media (max-width: 768px) {
+  header {
+    height: 56px;
+    padding: 0 12px;
+  }
+  header h1 {
+    font-size: 18px;
+  }
+  .header-button,
+  .header-profile {
+    height: 56px;
+    padding: 0 10px;
+    font-size: 14px;
+  }
+
+  /* ハンバーガーを表示 */
+  .hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* サイドバーをオーバーレイ展開に切替 */
+  .sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    bottom: 0;
+    width: 78vw;
+    max-width: 320px;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 1000;
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.25);
+  }
+  body.menu-open .sidebar {
+    transform: translateX(0);
+  }
+  body.menu-open .backdrop {
+    display: block;
+  }
+
+  /* レイアウトの詰め */
+  main {
+    flex-direction: column;
+  }
+  .container {
+    padding: 12px;
+  }
+  .row {
+    grid-template-columns: 1fr; /* フォームは1列縦並び */
+  }
+  table {
+    font-size: 14px;
+  }
+  th,
+  td {
+    padding: 10px 8px;
+  }
+
+  /* 右上ボタン群はモバイルでは非表示（必要なら残してOK） */
+  .header-buttons {
+    display: none;
+  }
+}
