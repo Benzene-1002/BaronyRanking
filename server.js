@@ -128,6 +128,32 @@ function resolveSeasonId({ season_id, year }) {
   return row ? row.id : null;
 }
 
+// 新規: 選手一覧 (rank順)
+app.get("/players", (req, res) => {
+  const seasonId = resolveSeasonId({
+    season_id: req.query.season_id,
+    year: req.query.year,
+  });
+  if (!seasonId)
+    return res
+      .status(400)
+      .json({ ok: false, error: "season_id or year required" });
+
+  const rows = db
+    .prepare(
+      `
+    SELECT p.id AS player_id, p.name, sr.rank
+    FROM season_rankings sr
+    JOIN players p ON p.id = sr.player_id
+    WHERE sr.season_id = ?
+    ORDER BY sr.rank ASC, p.id ASC
+  `
+    )
+    .all(seasonId);
+
+  res.json({ ok: true, players: rows });
+});
+
 // ==== 認証API =======================================================
 // POST /auth/login { username, password }
 app.post("/auth/login", async (req, res) => {
@@ -264,12 +290,10 @@ app.post("/matches", (req, res) => {
   const wn = String(winner_name || "").trim();
   const ln = String(loser_name || "").trim();
   if (!seasonId || !wn || !ln) {
-    return res
-      .status(400)
-      .json({
-        ok: false,
-        error: "season_id, winner_name, loser_name required",
-      });
+    return res.status(400).json({
+      ok: false,
+      error: "season_id, winner_name, loser_name required",
+    });
   }
 
   try {

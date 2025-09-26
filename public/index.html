@@ -59,12 +59,26 @@
           <h2>試合登録</h2>
           <div class="row">
             <div>
-              <label>勝者名</label>
-              <input id="winner" placeholder="例: C" />
+              <label>勝者</label>
+              <select id="winnerSel"></select>
+              <small
+                ><a href="#" id="winnerToManual">＋新規名を手入力</a></small
+              >
+              <input
+                id="winner"
+                placeholder="新規名を入力"
+                style="display: none; margin-top: 6px"
+              />
             </div>
             <div>
-              <label>敗者名</label>
-              <input id="loser" placeholder="例: B" />
+              <label>敗者</label>
+              <select id="loserSel"></select>
+              <small><a href="#" id="loserToManual">＋新規名を手入力</a></small>
+              <input
+                id="loser"
+                placeholder="新規名を入力"
+                style="display: none; margin-top: 6px"
+              />
             </div>
           </div>
           <div class="row">

@@ -38,6 +38,39 @@ function getSeasonId() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  async function loadPlayersForCurrentSeason() {
+    const selYear = document.getElementById("seasonYear");
+    const y = selYear ? Number(selYear.value) : undefined;
+    const sidInput = document.getElementById("seasonId");
+    const sid = !y && sidInput ? Number(sidInput.value) : undefined;
+
+    const param = y ? `year=${y}` : sid ? `season_id=${sid}` : "";
+    const winnerSel = document.getElementById("winnerSel");
+    const loserSel = document.getElementById("loserSel");
+    if (!param || !winnerSel || !loserSel) return;
+
+    try {
+      const res = await fetch(`/players?${param}`);
+      const data = await res.json();
+      if (!data.ok || !Array.isArray(data.players)) return;
+
+      const opts = [`<option value="">-- 選手を選択 --</option>`]
+        .concat(
+          data.players.map(
+            (p) =>
+              `<option value="${p.name}">${p.rank}. ${escapeHtml(
+                p.name
+              )}</option>`
+          )
+        )
+        .join("");
+      winnerSel.innerHTML = opts;
+      loserSel.innerHTML = opts;
+    } catch (e) {
+      console.error("loadPlayersForCurrentSeason failed", e);
+    }
+  }
+
   // ハンバーガーでサイドバー開閉
   on("menuToggle", "click", () => {
     const open = !document.body.classList.contains("menu-open");
@@ -143,6 +176,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
+  document.addEventListener("DOMContentLoaded", () => {
+    // 既存：initSeasonYearSelect() 等の初期化のあと
+    initSeasonYearSelect?.();
+
+    // 年セレクトがあるページでは選手リストをロード
+    loadPlayersForCurrentSeason();
+    document
+      .getElementById("seasonYear")
+      ?.addEventListener("change", loadPlayersForCurrentSeason);
+  });
+
   // 2) ランキング取得
   on("btnFetch", "click", async () => {
     const sel = document.getElementById("seasonYear");
@@ -186,11 +230,40 @@ document.addEventListener("DOMContentLoaded", () => {
     const season_id = getSeasonId();
     localStorage.setItem("seasonId", String(season_id));
 
-    const winner_name = $("winner")?.value.trim();
-    const loser_name = $("loser")?.value.trim();
+    // 選手名は「セレクト優先、手入力が表示中なら手入力を採用」
+    const wSel = document.getElementById("winnerSel");
+    const lSel = document.getElementById("loserSel");
+    const wInp = document.getElementById("winner");
+    const lInp = document.getElementById("loser");
+
+    const winner_name =
+      wInp && wInp.style.display !== "none"
+        ? wInp.value.trim()
+        : (wSel?.value || "").trim();
+    const loser_name =
+      lInp && lInp.style.display !== "none"
+        ? lInp.value.trim()
+        : (lSel?.value || "").trim();
+
     const played_at = $("playedAt")?.value.trim() || undefined;
-    const score = $("score")?.value.trim() || undefined; // ★追加
-    const note = $("note")?.value.trim() || undefined; // ★追加
+    const score = $("score")?.value.trim() || undefined;
+    const note = $("note")?.value.trim() || undefined;
+
+    // バリデーション
+    if (!winner_name || !loser_name) {
+      if ($("matchMsg"))
+        $(
+          "matchMsg"
+        ).innerHTML = `<span class="err">勝者と敗者を選択（または入力）してください</span>`;
+      return;
+    }
+    if (winner_name === loser_name) {
+      if ($("matchMsg"))
+        $(
+          "matchMsg"
+        ).innerHTML = `<span class="err">同じ選手を勝者と敗者に選べません</span>`;
+      return;
+    }
 
     try {
       const res = await fetch("/matches", {
@@ -203,14 +276,17 @@ document.addEventListener("DOMContentLoaded", () => {
           played_at,
           score,
           note,
-        }), // ★追加
+        }),
       });
       const data = await res.json();
       if (data.ok) {
         if ($("matchMsg"))
           $("matchMsg").innerHTML = `<span class="ok">登録成功</span>`;
         if ($("btnFetch")) $("btnFetch").click(); // ランキング更新
-        // 入力クリア（任意）
+
+        // 入力リセット（任意）
+        if (wInp) wInp.value = "";
+        if (lInp) lInp.value = "";
         if ($("score")) $("score").value = "";
         if ($("note")) $("note").value = "";
       } else {
@@ -461,5 +537,28 @@ document.addEventListener("DOMContentLoaded", () => {
   // ダミーの # リンクがある場合の遷移抑止（任意）
   document.querySelectorAll('a[href="#"]').forEach((a) => {
     a.addEventListener("click", (e) => e.preventDefault());
+  });
+
+  function toggleManual(which, toManual) {
+    const sel = document.getElementById(which + "Sel");
+    const inp = document.getElementById(which);
+    if (!sel || !inp) return;
+    if (toManual) {
+      sel.style.display = "none";
+      inp.style.display = "block";
+      inp.focus();
+    } else {
+      sel.style.display = "block";
+      inp.style.display = "none";
+    }
+  }
+
+  on("winnerToManual", "click", (e) => {
+    e.preventDefault();
+    toggleManual("winner", true);
+  });
+  on("loserToManual", "click", (e) => {
+    e.preventDefault();
+    toggleManual("loser", true);
   });
 });
